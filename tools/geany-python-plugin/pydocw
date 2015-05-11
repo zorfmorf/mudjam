@@ -1,0 +1,43 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+#       pydocgtk
+#       Mirat Can Bayrak, 2008, <mirat@pardus-nx8220>
+#       Updated to python3 by Sebastian Tauch, 2015, <sebastian.tauch@aborium.com>
+from gi.repository import Gtk
+import sys, pydoc 
+
+def main():
+    def show_help(text):
+        window = Gtk.Window()
+        window.set_default_size(800, 400)
+        window.set_skip_taskbar_hint(False)
+        window.set_skip_pager_hint(False)
+        window.set_title('Instant Helper')
+        window.set_decorated(False)
+        window.connect('key-press-event', lambda a,b : Gtk.main_quit())
+        textbuffer = Gtk.TextBuffer()
+        textbuffer.set_text(text)
+        textview = Gtk.TextView()
+        textview.set_buffer(textbuffer)
+        textview.set_wrap_mode(Gtk.WrapMode.WORD)
+        textview.set_editable(False)
+        textview.set_cursor_visible(False)
+        scroll = Gtk.ScrolledWindow()
+        scroll.set_shadow_type(Gtk.ShadowType.OUT)
+        scroll.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
+        scroll.add(textview)
+        window.add(scroll)
+        window.show_all()
+        Gtk.main()
+    try :
+        word = sys.argv[1]
+    except :
+        show_help("Wrong Usage\nUsage is: #pydocw name")
+        sys.exit(1)
+    try:
+        show_help(pydoc.getdoc(pydoc.resolve(word)[0]))
+    except:
+        show_help("no document")
+        sys.exit(1)
+if __name__ == '__main__': main()
