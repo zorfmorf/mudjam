@@ -1,15 +1,16 @@
 import socket
 import threading
 import socketserver
-import tcp.server as server
+import mud.server as serv
 
 finish = False
+
 
 if __name__ == "__main__":
 	HOST, PORT = "localhost", 4183
 	
 	# Create server object
-	server = server.ThreadedTCPServer((HOST, PORT), server.ThreadedTCPRequestHandler)
+	server = serv.ThreadedTCPServer((HOST, PORT), serv.ThreadedTCPRequestHandler)
 	ip, port = server.server_address
 	
 	# 
