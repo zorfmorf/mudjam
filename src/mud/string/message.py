@@ -14,4 +14,11 @@ class Message:
 		" by ", C.GREEN, "Sebastian Tauch", C.SANE, "\n"))
 
 	def new_player():
-		return "".join(("Are you a new player? (Yes/No)\n"))
+		return "Do you want to create a new character? (Yes/No)\n"
+	
+	def create():
+		return ""
+	
+	def load():
+		return "Enter the key for the saved character\n"
+ 

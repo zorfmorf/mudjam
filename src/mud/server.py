@@ -4,6 +4,7 @@ import socketserver
 import time
 from mud.string.message import Message as M
 from mud.player import Player
+from mud.string.command import Command as C
 
 # if message m contains any of the elements in list l
 def contains(m, l):
@@ -11,6 +12,12 @@ def contains(m, l):
 		if c in m:
 			return True
 	return False
+
+def commandlist()
+	commands = []
+	for name, member in C.__members__.items():
+		commands.append(name)
+	return commands
 
 class ThreadedTCPRequestHandler(socketserver.BaseRequestHandler):
 	
@@ -25,28 +32,33 @@ class ThreadedTCPRequestHandler(socketserver.BaseRequestHandler):
 	def recv(self, mlist):
 		data = " " + str(self.request.recv(2), 'ascii')
 		data = data.lower()
+		
+		# read data until one of given options is found
 		while not contains(data, mlist):
 			data += str(self.request.recv(1), 'ascii')
 			data = data.lower()
-		return data
+			
+		# return recieved given option
+		for i in mlist:
+			if i in data:
+				return i
 	
 	def handle(self):
 		self.send(M.welcome())
-		self.send(M.new_player())
-		data = self.recv(("yes", "no"))
-		if "yes" in data:
-			self.send("Lets get you registered\n")
-			
-		if "no" in data:
-			self.send("Welcome bag, Mr. Fancypants\n")
 		
-		#response = bytes("Eyyyyy", 'ascii')
-		#self.request.sendall(response)
-		#self.send("".join(("Welcome to ", C.GREEN, "TestMUD", C.SANE, "\n!")))
-		#data = str(self.request.recv(1024), 'ascii')
-		#cur_thread = threading.current_thread()
-		#response = bytes("{}: {}".format(cur_thread.name, data), 'ascii')
-		#self.request.sendall(response)
+		# Load or create character
+		while self.player.state == PlayerState.UNKOWN:
+			self.send(M.new_player())
+			answer = self.recv(("yes", "no"))
+			if answer == "yes":
+				self.send(M.create())
+			else:
+				self.send(M.load())
+		
+		# Recieve commands and
+		answer = self.recv(commandlist())
+		while not (answer == C.)
+		
 		global finish
 		finish = True
 	
