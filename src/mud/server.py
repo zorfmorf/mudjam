@@ -5,22 +5,35 @@ import time
 from mud.string.message import Message as M
 from mud.player import Player
 
+# if message m contains any of the elements in list l
+def contains(m, l):
+	for c in l:
+		if c in m:
+			return True
+	return False
+
 class ThreadedTCPRequestHandler(socketserver.BaseRequestHandler):
 	
 	player = None
 	
+	def setup(self):
+		self.player = Player()
+	
 	def send(self, message):
 		self.request.sendall(bytes( message, 'ascii'))
 	
-	def setup(self):
-		self.player = Player()
+	def recv(self, mlist):
+		data = " " + str(self.request.recv(2), 'ascii')
+		data = data.lower()
+		while not contains(data, mlist):
+			data += str(self.request.recv(1), 'ascii')
+			data = data.lower()
+		return data
 	
 	def handle(self):
 		self.send(M.welcome())
 		self.send(M.new_player())
-		data = str(self.request.recv(1), 'ascii')
-		while not ("yes" in data or "no" in data):
-			data += str(self.request.recv(1), 'ascii')
+		data = self.recv(("yes", "no"))
 		if "yes" in data:
 			self.send("Lets get you registered\n")
 			

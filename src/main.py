@@ -23,7 +23,7 @@ if __name__ == "__main__":
 	server_thread.start()
 	
 	while not finish:
-		time.sleep(1.0)
+		time.sleep(1.04)
 	
 	server.shutdown()
 	print("Server finished")
