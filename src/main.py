@@ -2,6 +2,7 @@ import socket
 import threading
 import socketserver
 import mud.server as serv
+import time
 
 finish = False
 
@@ -22,7 +23,7 @@ if __name__ == "__main__":
 	server_thread.start()
 	
 	while not finish:
-		pass
+		time.sleep(1.0)
 	
 	server.shutdown()
 	print("Server finished")
