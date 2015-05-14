@@ -1,4 +1,5 @@
 from enum import Enum
+from mud.string.message import Message as M
 
 class PlayerState(Enum):
 	
@@ -7,6 +8,19 @@ class PlayerState(Enum):
 
 class Player():
 	
-	def __init__(self):
-		self.state = PlayerState.UNKNOWN
+	messagequeue = []
+	state = PlayerState.UNKNOWN
+	
+	def add(self, m):
+		self.messagequeue.append(m)
+		
+	def clear(self):
+		self.messagequeue = []
+	
+	# actually handle player action
+	def do(self, action):
+		if action == "help":
+			self.add(M.help())
+		else:
+			self.add(M.no_effect())
 

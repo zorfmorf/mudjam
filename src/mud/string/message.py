@@ -1,6 +1,15 @@
 from mud.string.colors import AnsiColors as C
 
 class Message:
+	
+	def hint():
+		return "Go on, play! Type \"help\" if you are unsure what to do.\n"
+	
+	def no_effect():
+		return "This doesn't do anything.\n"
+	
+	def help():
+		return "This is a help message.\n"
 
 	def welcome():
 		return "".join(( "\n         Welcome to\n\n", C.GREEN,
@@ -17,7 +26,7 @@ class Message:
 		return "Do you want to create a new character? (Yes/No)\n"
 	
 	def create():
-		return ""
+		return "Creating new player.\n"
 	
 	def load():
 		return "Enter the key for the saved character\n"
