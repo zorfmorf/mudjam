@@ -14,7 +14,7 @@ class Command():
 			l.append(item[0])
 		return l
 	
-	def help(self, command):
+	def help(self, command=None):
 		if self.commands[command]:
 			return self.commands[command]
-		return "Unkown command"
+		return self.commandlist()
