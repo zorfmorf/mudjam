@@ -17,9 +17,11 @@ def contains(m, l):
 class ThreadedTCPRequestHandler(socketserver.BaseRequestHandler):
 	
 	player = None
+	c = None
 	
 	def setup(self):
 		self.player = Player()
+		self.c = C()
 	
 	def send(self, message):
 		self.request.sendall(bytes( message, 'ascii'))
@@ -35,6 +37,8 @@ class ThreadedTCPRequestHandler(socketserver.BaseRequestHandler):
 		
 		# read data until one of given options is found
 		while not contains(data, mlist):
+			if contains(data, ["\\n"]):
+				self.send(M.hint())
 			data += str(self.request.recv(1024), 'ascii')
 			data = data.lower()
 			
@@ -50,7 +54,7 @@ class ThreadedTCPRequestHandler(socketserver.BaseRequestHandler):
 		# Load or create character
 		while self.player.state == PlayerState.UNKNOWN:
 			self.send(M.new_player())
-			answer = self.recv(("yes", "no"))
+			answer = self.recv(["yes", "no"])
 			if answer == "yes":
 				self.send(M.create())
 				self.player.state = PlayerState.NEW
@@ -59,12 +63,12 @@ class ThreadedTCPRequestHandler(socketserver.BaseRequestHandler):
 		
 		# Recieve commands and handle them
 		self.send(M.hint())
-		answer = self.recv(C.commandlist())
+		answer = self.recv(self.c.commandlist())
 		while not (answer == "quit"):
 			self.player.do(answer)
 			self.sendall()
 			time.sleep(0.5)
-			answer = self.recv(C.commandlist())
+			answer = self.recv(self.c.commandlist())
 		
 	
 	def finish(self):

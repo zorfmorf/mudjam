@@ -3,7 +3,7 @@ from mud.string.colors import AnsiColors as C
 class Message:
 	
 	def hint():
-		return "Go on, play! Type \"help\" if you are unsure what to do.\n"
+		return "Type \"help\" if you are unsure what to do.\n"
 	
 	def no_effect():
 		return "This doesn't do anything.\n"
