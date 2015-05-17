@@ -2,6 +2,9 @@ from mud.string.colors import AnsiColors as C
 
 class Message:
 	
+	def goodbye():
+		return "Thanks for playing!\n"
+	
 	def hint():
 		return "Type \"help\" if you are unsure what to do.\n"
 	
@@ -9,7 +12,7 @@ class Message:
 		return "This doesn't do anything.\n"
 	
 	def help():
-		return "This is a help message.\n"
+		return "This is a list of all possible commands:\n"
 
 	def welcome():
 		return "".join(( "\n         Welcome to\n\n", C.GREEN,

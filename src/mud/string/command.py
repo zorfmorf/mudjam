@@ -14,7 +14,8 @@ class Command():
 			l.append(item[0])
 		return l
 	
-	def help(self, command=None):
-		if self.commands[command]:
-			return self.commands[command]
-		return self.commandlist()
+	def help(self, command):
+		for i in self.commands:
+			if i[0] == command:
+				return i[0], i[1]
+		return None

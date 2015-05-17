@@ -7,12 +7,6 @@ from mud.player import Player
 from mud.player import PlayerState
 from mud.string.command import Command as C
 
-# if message m contains any of the elements in list l
-def contains(m, l):
-	for c in l:
-		if c in m:
-			return True
-	return False
 
 class ThreadedTCPRequestHandler(socketserver.BaseRequestHandler):
 	
@@ -25,28 +19,37 @@ class ThreadedTCPRequestHandler(socketserver.BaseRequestHandler):
 	
 	def send(self, message):
 		self.request.sendall(bytes( message, 'ascii'))
-		
+	
+	# send all queued messages for this player
 	def sendall(self):
 		for i in self.player.messagequeue:
 			self.send(i)
 		self.player.clear()
 	
+	# Recieve data and check if the answer starts
+	# with any of the items in the given list
 	def recv(self, mlist):
-		data = " " + str(self.request.recv(1024), 'ascii')
-		data = data.lower()
+		data = None
+		while data == None:
+			data = str(self.request.recv(1024), 'ascii')
 		
-		# read data until one of given options is found
-		while not contains(data, mlist):
-			if contains(data, ["\\n"]):
-				self.send(M.hint())
-			data += str(self.request.recv(1024), 'ascii')
-			data = data.lower()
-			
-		# return recieved given option
+		data = data.lower()	
+		
 		for i in mlist:
-			if i in data:
-				data = ""
-				return i
+			if data.startswith(i):
+				return i, data[len(i):]
+		
+		# Return a string bc we HAVE recieved data
+		# that was invalid (-> answer required)
+		return "None"
+	
+	# Retry recieving until some answer is recieved
+	def recv_until(self, mlist):
+		answer = None
+		trail = None
+		while answer == None:
+			answer, trail = self.recv(mlist)
+		return answer, trail
 	
 	def handle(self):
 		self.send(M.welcome())
@@ -54,21 +57,23 @@ class ThreadedTCPRequestHandler(socketserver.BaseRequestHandler):
 		# Load or create character
 		while self.player.state == PlayerState.UNKNOWN:
 			self.send(M.new_player())
-			answer = self.recv(["yes", "no"])
+			answer, trail = self.recv(["yes", "no"])
 			if answer == "yes":
 				self.send(M.create())
 				self.player.state = PlayerState.NEW
-			else:
+			if answer == "no":
 				self.send(M.load())
 		
 		# Recieve commands and handle them
 		self.send(M.hint())
-		answer = self.recv(self.c.commandlist())
+		answer, trail = self.recv_until(self.c.commandlist())
 		while not (answer == "quit"):
-			self.player.do(answer)
+			print( "recieved", answer, trail)
+			self.player.do(answer, trail)
 			self.sendall()
-			time.sleep(0.5)
+			time.sleep(0.2)
 			answer = self.recv(self.c.commandlist())
+		self.send(M.goodbye())
 		
 	
 	def finish(self):
